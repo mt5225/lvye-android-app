@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, Lvye!</string>
+    <string name="app_name">绿野.org</string>
+    <string name="msg_check_connection">网络链接超时</string>
+    <string name="msg_load_more">更多 ... </string>
+</resources>
