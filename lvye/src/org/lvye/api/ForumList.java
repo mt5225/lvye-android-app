@@ -35,11 +35,45 @@ public class ForumList {
   
   public ForumList() {
 	  forums = new ArrayList<Forum>();
-	  forums.add(new Forum("12", "绿野风版", ForumList.getURLbyID("12")));
-	  forums.add(new Forum("35", "绿野行版", ForumList.getURLbyID("35")));
+	  forums.add(new Forum("999", "我的最爱"));
+	  forums.add(new Forum("9", "网站建设"));
+	  forums.add(new Forum("12", "绿野风版"));
+	  forums.add(new Forum("999", "论坛列表"));
+	  forums.add(new Forum("12", "绿野风版"));
+	  forums.add(new Forum("10", "录内路外"));
+	  forums.add(new Forum("51", "户外攻略"));
+	  forums.add(new Forum("35", "绿野行版"));
+	  forums.add(new Forum("51", "户外攻略"));
+	  forums.add(new Forum("14", "绿野山版"));
+	  forums.add(new Forum("23", "装备论坛"));
+	  forums.add(new Forum("31", "户外通讯"));
+	  forums.add(new Forum("25", "心情随笔 - 驿站精华"));
+	  forums.add(new Forum("21", "活动照片"));
+	  forums.add(new Forum("69", "户外安全"));
+	  forums.add(new Forum("47", "广州活动计划"));
+	  forums.add(new Forum("36", "广州户外"));
+	  forums.add(new Forum("46", "广州风版"));
+	  forums.add(new Forum("42", "绿野广州精华版"));
+	  forums.add(new Forum("63", "绿野湖南"));
+	  forums.add(new Forum("32", "Oversea Version"));
+	  forums.add(new Forum("17", "周末户外活动"));
+	  forums.add(new Forum("40", "周末休闲活动"));
+	  forums.add(new Forum("41", "远期自助旅游"));
+	  forums.add(new Forum("72", "远期约伴"));
+	  forums.add(new Forum("20", "帐目公开"));
+	  forums.add(new Forum("30", "体育活动"));
+	  forums.add(new Forum("34", "摄影作品"));
+	  forums.add(new Forum("33", "时尚活动(车/马/滑雪)"));
+	  forums.add(new Forum("9", "网站建设"));
+	  forums.add(new Forum("16", "维护小组"));
+	  forums.add(new Forum("48", "铁杆茶社"));
+	  forums.add(new Forum("43", "技术小组"));
+	  forums.add(new Forum("15", "中转站"));
+	  forums.add(new Forum("7", "热点讨论"));
+	  forums.add(new Forum("71", "绿野专版"));
   }
   
-  public ArrayList<Forum> getAllForum() {	  
+  public ArrayList<Forum> getAllForum() {	
 	  return forums;
   }
   
