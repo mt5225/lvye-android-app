@@ -56,10 +56,10 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 			if (msg.what >= 0) {
 				if (moreStories != null) {
 					for (Story s : moreStories) {
-							add(s);
+						add(s);
 					}
 					add(new Story("END"));
-					
+
 				}
 			} else {
 				Toast.makeText(
@@ -75,39 +75,55 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 		}
 	};
 
-	// send message to refresh UI after story loading
-	public void addMoreStories(final String url) {
+	/**
+	 * send message to refresh UI after story loading
+	 * 
+	 * @param url
+	 * @param status
+	 *            if status = 0 refresh story list if status = 1 use cache if
+	 *            status =2 add more story under the same topic
+	 */
+	public void addMoreStories(final String url, int status) {
 		if (rootActivity != null) {
 			rootActivity.startIndeterminateProgressIndicator();
 		}
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (getMoreStories(url)) {
-					handler.sendEmptyMessage(0);
-				} else {
-					handler.sendEmptyMessage(-1);
+		if (status == 0) {
+			LvyeActivity.clearStoryCache();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					if (getMoreStories(url)) {
+						handler.sendEmptyMessage(0);
+					} else {
+						handler.sendEmptyMessage(-1);
+					}
 				}
-			}
-		}).start();
+			}).start();
+		} else if (status == 1) {
+			moreStories = LvyeActivity.storyCache;
+			handler.sendEmptyMessage(0);
+		} else {
+			// TODO add more stories
+			handler.sendEmptyMessage(0);
+		}
 	}
 
-	//clear and load stories given a forum url
+	// clear and load stories given a forum url
 	private boolean getMoreStories(String url) {
-		ArrayList<String> stories = null;
+		ArrayList<String> httpResponse = null;
 		try {
 			Client client = new Client();
-			stories = client.execute(url);
+			httpResponse = client.execute(url);
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "", e);
 			return false;
 		}
-
-		if (stories == null) {
+		if (httpResponse == null) {
 			Log.d(LOG_TAG, "stories: none");
 		} else {
-			Log.d(LOG_TAG, "number of stories: " + stories.size());
-			moreStories = StoryFactory.parseStories(stories);
+			Log.d(LOG_TAG, "number of stories: " + httpResponse.size());
+			moreStories = StoryFactory.parseStories(httpResponse);
+			LvyeActivity.addAllToStoryCache(moreStories);
 		}
 		return true;
 	}
