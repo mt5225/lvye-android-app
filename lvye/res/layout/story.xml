@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="left" >
+
+<LinearLayout
+    android:id="@+id/StoryBar"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/header"
+    android:gravity="center"
+    android:orientation="horizontal" >
+    <ImageButton
+        android:id="@+id/BackToForumListButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:onClick="onBackToTopicList"
+        android:layout_margin="10dip"
+        android:src="@drawable/minus_normal"/>  
+
+    <TextView
+        android:id="@+id/StoryTitle"
+        android:layout_width="192dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1"
+        android:textAppearance="@style/ViewStoryTitleText" />
+
+    <Button
+        android:id="@+id/StoryShareButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="6dp"
+        android:layout_weight="1"
+        android:drawableLeft="@drawable/share"
+        android:text="@string/msg_share"
+        android:background="@drawable/story_button_background"
+        android:onClick="onShare"/>
+    
+</LinearLayout>
+ <FrameLayout
+        android:id="@+id/StoryContent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/StoryBar" >
+
+     <WebView
+         android:id="@+id/webView1"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent" />
+    
+  </FrameLayout>
+</RelativeLayout>

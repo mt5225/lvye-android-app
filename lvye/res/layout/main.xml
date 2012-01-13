@@ -16,8 +16,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dip"
+            android:onClick="onSelectForum"
             android:background="@android:color/transparent"
-            android:src="@drawable/search_button" />
+            android:src="@drawable/nav_menu_button" />
 
         <LinearLayout
             android:layout_width="wrap_content"

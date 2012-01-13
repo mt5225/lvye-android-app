@@ -15,22 +15,15 @@
 
 package org.lvye;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.lvye.api.Story;
 import org.lvye.api.Client;
 import org.lvye.api.Story.StoryFactory;
 
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-
 import android.content.Context;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Html;
@@ -39,8 +32,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +40,6 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 	private final LayoutInflater inflater;
 	private RootActivity rootActivity = null;
 	private List<Story> moreStories = null;
-	private boolean endReached = false;
 
 	public NewsListAdapter(Context context) {
 		super(context, R.layout.news_item);
@@ -65,15 +55,11 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 		public void handleMessage(Message msg) {
 			if (msg.what >= 0) {
 				if (moreStories != null) {
-					remove(null);
 					for (Story s : moreStories) {
-						if (getPosition(s) < 0) {
 							add(s);
-						}
 					}
-					if (!endReached) {
-						add(null);
-					}
+					add(new Story("END"));
+					
 				}
 			} else {
 				Toast.makeText(
@@ -88,81 +74,72 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 
 		}
 	};
-	
-	//send message to refresh UI after story loading
+
+	// send message to refresh UI after story loading
 	public void addMoreStories(final String url) {
-	    if (rootActivity != null) {
-	      rootActivity.startIndeterminateProgressIndicator();
-	    }
-	    new Thread(new Runnable() {
-	      @Override
-	      public void run() {
-	        if (getMoreStories(url)) {
-	          handler.sendEmptyMessage(0);
-	        } else {
-	          handler.sendEmptyMessage(-1);
-	        }
-	      }
-	    }).start();
-	  }
-	
-	// load story from web
+		if (rootActivity != null) {
+			rootActivity.startIndeterminateProgressIndicator();
+		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (getMoreStories(url)) {
+					handler.sendEmptyMessage(0);
+				} else {
+					handler.sendEmptyMessage(-1);
+				}
+			}
+		}).start();
+	}
+
+	//clear and load stories given a forum url
 	private boolean getMoreStories(String url) {
 		ArrayList<String> stories = null;
-	    try {
-	      Client client = new Client();
-	      stories = client.execute(url);
-	    } catch (Exception e) {
-	      Log.e(LOG_TAG, "", e);
-	      return false;
-	    }
+		try {
+			Client client = new Client();
+			stories = client.execute(url);
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "", e);
+			return false;
+		}
 
-	    if (stories == null) {
-	      Log.d(LOG_TAG, "stories: none");
-	    } else {
-	      Log.d(LOG_TAG, "number of stories: " + stories.size());
-	      moreStories = StoryFactory.parseStories(stories);
-	      if (moreStories != null) {	        
-	          endReached = true;
-	      }
-	    }
-	    return true;
-	  }
-	
-	//built the story list view
+		if (stories == null) {
+			Log.d(LOG_TAG, "stories: none");
+		} else {
+			Log.d(LOG_TAG, "number of stories: " + stories.size());
+			moreStories = StoryFactory.parseStories(stories);
+		}
+		return true;
+	}
+
+	// built the story list view
 	@Override
-	  public View getView(final int position, View convertView, final ViewGroup parent) {
+	public View getView(final int position, View convertView,
+			final ViewGroup parent) {
 
-	    if (convertView == null) {
-	      convertView = inflater.inflate(R.layout.news_item, parent, false);
-	    }
+		if (convertView == null) {
+			convertView = inflater.inflate(R.layout.news_item, parent, false);
+		}
 
-	    Story story = getItem(position);
+		Story story = getItem(position);
 
-	   
-	    TextView teaser = (TextView) convertView.findViewById(R.id.NewsItemTeaserText);
-	    TextView name = (TextView) convertView.findViewById(R.id.NewsItemNameText);
-
-	    if (story != null) {
-	      name.setText(Html.fromHtml(story.toString()));
-
-	      // Need to (re)set this because the views are reused. If we don't then
-	      // while scrolling, some items will replace the old "Load more stories"
-	      // view and will be in italics
-	      name.setTypeface(name.getTypeface(), Typeface.BOLD);	      
-	      String teaserText = story.getTeaser();
-	    
-	      if (teaserText != null && teaserText.length() > 0) {
-	        teaser.setText(Html.fromHtml(teaserText));
-	        teaser.setVisibility(View.VISIBLE);
-	      } else {
-	        teaser.setVisibility(View.GONE);
-	      } 
-	    } else {      
-	      teaser.setVisibility(View.INVISIBLE);
-	      name.setTypeface(name.getTypeface(), Typeface.ITALIC);
-	      name.setText(R.string.msg_load_more);
-	    }
-	    return convertView;
-	  }
+		Log.d(LOG_TAG, "current position =" + position + story.toString());
+		TextView teaser = (TextView) convertView
+				.findViewById(R.id.NewsItemTeaserText);
+		TextView name = (TextView) convertView
+				.findViewById(R.id.NewsItemNameText);
+		if (!story.getTitle().equals("END")) {
+			name.setText(Html.fromHtml(story.toString()));
+			name.setTypeface(name.getTypeface(), Typeface.BOLD);
+			String teaserText = story.getTeaser();
+			teaser.setText(Html.fromHtml(teaserText));
+			teaser.setVisibility(View.VISIBLE);
+		} else {
+			// title='END' marker means it's the end of the list.
+			teaser.setVisibility(View.INVISIBLE);
+			name.setTypeface(name.getTypeface(), Typeface.ITALIC);
+			name.setText(R.string.msg_load_more);
+		}
+		return convertView;
+	}
 }

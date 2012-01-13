@@ -24,7 +24,7 @@
       android:layout_width="fill_parent"
       android:layout_height="fill_parent"
       android:layout_below="@+id/TitleText"
-      android:layout_marginBottom="95dip">
+      android:layout_marginBottom="5dip">
     </FrameLayout>
   </LinearLayout>
 </merge>

@@ -14,6 +14,8 @@
 
 package org.lvye;
 
+import org.lvye.api.ForumList;
+
 import android.app.Application;
 import android.util.Log;
 
@@ -29,5 +31,7 @@ public class LvyeForumApplication extends Application {
   public void onCreate() {
 	Log.d(LOG_TAG, "application startted");
     super.onCreate();
+    //init the forum list
+    new ForumList();
   }
 }

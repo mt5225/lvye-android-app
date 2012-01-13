@@ -30,23 +30,25 @@ public class Story {
 	private String lastModifiedDate = "";
 	private String author = "";
 	private String size= "";
-	private String url= "";
 
 	public Story(String title, String subtitle, String post_id,
-			String lastModifiedDate, String author, String size, String url) {
+			String lastModifiedDate, String author, String size) {
 		this.title = title;
 		this.subtitle = subtitle;
-		this.post_id = post_id;
+		this.setPost_id(post_id);
 		this.lastModifiedDate = lastModifiedDate;
 		this.author = author;
 		this.size = size;
-		this.url = url;
 	}
 	
 	public Story(String title, String post_id, String size) {
 		this.title = title;
-		this.post_id = post_id;
+		this.setPost_id(post_id);
 		this.size = size;
+	}
+	
+	public Story (String title) {
+		this.title = title;
 	}
 	
 	public String getTeaser() {
@@ -57,7 +59,30 @@ public class Story {
 	public String toString() {
 	    return title;
 	  }
+	
+	public String getTitle() {
+		return title;
+	}
 
+	/**
+	 * @return the post_id
+	 */
+	public String getPost_id() {
+		return post_id;
+	}
+
+	/**
+	 * @param post_id the post_id to set
+	 */
+	public void setPost_id(String post_id) {
+		this.post_id = post_id;
+	}
+
+	/**
+	 * 
+	 * parse http response message and create story object
+	 *
+	 */
 	public static class StoryFactory {
 		public static List<Story> parseStories(ArrayList<String> httpResp) {
 			LinkedList<Story> result = new LinkedList<Story>();
@@ -71,7 +96,6 @@ public class Story {
 						s[0].length() - 1);
 				String topic = s[1];
 				String size = s2.substring(8, s2.length() - 1);
-				Log.d(LOG_TAG, post_id + "|" + topic + "|" + size);
 				Story story = new Story (topic, post_id, size);
 				result.add(story);
 			}

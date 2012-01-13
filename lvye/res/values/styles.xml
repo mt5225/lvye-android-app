@@ -36,6 +36,13 @@
     <item name="android:ellipsize">end</item>
     <item name="android:singleLine">true</item>
   </style>
+  <style name="ViewStoryTitleText" parent="@android:style/TextAppearance">
+    <item name="android:textSize">16dip</item>
+    <item name="android:textColor">#EEEBEB</item>
+    <item name="android:textStyle">bold</item>
+    <item name="android:ellipsize">end</item>
+    <item name="android:singleLine">true</item>
+  </style>
   <style name="NewsItemTitle" parent="@android:style/TextAppearance">
     <item name="android:textSize">15dip</item>
     <item name="android:typeface">serif</item>

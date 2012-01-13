@@ -15,8 +15,11 @@
 
 package org.lvye.api;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.lvye.Constants;
 
 import android.util.Log;
 
@@ -28,17 +31,15 @@ import android.util.Log;
  */
 public class ForumList {
   private static final String LOG_TAG = Client.class.getName();
-  private static final String urlPrefix = "http://www.lvye.org/modules/lvyebb/viewforum.php?mode=1&id=";	
-  private static final Map<String, String> forums = new HashMap<String, String>(){
-	  {
-        put("12", "绿野风版");
-        put("35", "绿野行版");
-      }
-  };
+  public static ArrayList<Forum> forums = null;
   
-  public ForumList() {}
+  public ForumList() {
+	  forums = new ArrayList<Forum>();
+	  forums.add(new Forum("12", "绿野风版", ForumList.getURLbyID("12")));
+	  forums.add(new Forum("35", "绿野行版", ForumList.getURLbyID("35")));
+  }
   
-  public Map<String, String> getForumList() {	  
+  public ArrayList<Forum> getAllForum() {	  
 	  return forums;
   }
   
@@ -49,21 +50,42 @@ public class ForumList {
    * @return url to posts given by a forum
    */
   public static final String getURLbyID (String id) {	
-	  String url = ForumList.urlPrefix + id;
-	  Log.d(LOG_TAG, "returen URL " + url);
-	  return ForumList.urlPrefix + id;
-  }
-  //page index: &start=50 , &start=100, etc
-  public static final String getURLbyID (String id, int page_index) {	
-	  String url = ForumList.urlPrefix + id + "&start=" + page_index * 50;
+	  String url = Constants.urlPrefix + id;
 	  Log.d(LOG_TAG, "returen URL " + url);
 	  return url;
   }
+  //page index: &start=50 , &start=100, etc
+  public static final String getURLbyID (String id, int page_index) {	
+	  String url = Constants.urlPrefix + id + "&start=" + page_index * 50;
+	  Log.d(LOG_TAG, "return forum URL " + url);
+	  return url;
+  }
   
-  public static final String getForumNamebyID (String id) {
-	  Log.d(LOG_TAG, "returen Forum Name " + forums.get(id));
-	  return forums.get(id);
+  //generation story url by post_id
+  // http://www.lvye.org/modules/lvyebb/viewtopic.php?view=1&post_id=44139166&mode=1
+  public static final String getStoryURLbyPostID(String id) {
+	  String url = Constants.postUrlPrefix + id;
+	  Log.d(LOG_TAG, "return story URL " + url);
+	  return url;
+  }
+  
+  public static final String getForumIDByName(String name) {
+	  for(Forum fr:forums) {
+		  if (fr.getName().equals(name)) {
+			  return fr.getId();
+		  }
+	  }
+	  //always return sth.
+	  return "12";
+  }
+  public static final String getForumNameByID(String id){
+	  for(Forum fr:forums) {
+		  if (fr.getId().equals(id)) {
+			  return fr.getName();
+		  }
+	  }
+	  //always return sth.
+	  return "绿野风版";
   }
 
 }
-
