@@ -36,6 +36,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
+/**
+ * 
+ * @author 姜丝@lvye.org
+ *
+ */
 public class NavigationActivity extends Activity implements
 		OnItemClickListener {
 	private static final String LOG_TAG = NavigationActivity.class.getName();
@@ -62,7 +67,7 @@ public class NavigationActivity extends Activity implements
 					.putExtra(Constants.FORUM_ID, forumID);
 			startActivity(intent);
 		}
-	}
+	} 
 
 	private class ForumListAdapter extends ArrayAdapter<Forum> {
 
@@ -81,7 +86,7 @@ public class NavigationActivity extends Activity implements
 			}
 
 			Forum forum = getItem(position);
-			Log.d(LOG_TAG, "disploy forum name:" + forum.getName());
+			//Log.d(LOG_TAG, "disploy forum name:" + forum.getName());
 			TextView textView = (TextView) convertView
 					.findViewById(R.id.ForumTitle);
 			

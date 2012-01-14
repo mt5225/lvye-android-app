@@ -38,17 +38,27 @@ public class Client {
 		Log.d(LOG_TAG, "executing request " + httpget.getURI());
 		ResponseHandler<String> responseHandler = new BasicResponseHandler();
 		String responseBody = httpclient.execute(httpget, responseHandler);
-		String[] temp;
-		temp = responseBody.split("\n");
+		String[] responseLine = responseBody.split("\n");
 		// a array to hold http response string line
 		ArrayList<String> al = new ArrayList<String>();
-		for (String t : temp) {
-			if (t.contains("viewtopic") && !t.contains("stickytop")) {
+		ArrayList<String> authors = new ArrayList<String>();
+		ArrayList<String> storyInfo =  new ArrayList<String>();
+		for (String t : responseLine) {
+			if (t.contains("viewtopic") ) {   //includes sticky topic  && !t.contains("stickytop")
 				al.add(t);
 			}
+			if (t.contains("user.php") && !t.contains("版主")) {
+				authors.add(t);
+			}
 		}
-		Log.d(LOG_TAG, "number of return topics: " + al.size());
-		return al;
+		//combine story and author 
+		for(int i=0; i< al.size();i++) {
+			String t1 = (String) al.get(i);
+			String t2 = (String)authors.get(i);
+			storyInfo.add(t1 + "|" + t2);
+		}
+		Log.d(LOG_TAG, "number of return topics: " + storyInfo.size());
+		return storyInfo;
 	}
 
 }

@@ -38,6 +38,8 @@ public class ForumList {
 	  forums.add(new Forum("999", "我的最爱"));
 	  forums.add(new Forum("9", "网站建设"));
 	  forums.add(new Forum("12", "绿野风版"));
+	  forums.add(new Forum("17", "周末户外活动"));
+	  forums.add(new Forum("40", "周末休闲活动"));
 	  forums.add(new Forum("999", "论坛列表"));
 	  forums.add(new Forum("12", "绿野风版"));
 	  forums.add(new Forum("10", "录内路外"));

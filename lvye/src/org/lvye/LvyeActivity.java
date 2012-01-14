@@ -22,6 +22,7 @@ import org.lvye.api.ForumList;
 import org.lvye.api.Story;
 import org.lvye.util.DisplayUtils;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,6 +36,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -47,36 +49,48 @@ import android.widget.AdapterView.OnItemClickListener;
 public class LvyeActivity extends RootActivity implements OnItemClickListener {
 
 	private static final String LOG_TAG = LvyeActivity.class.getName();
-	private String currentForumID = "";
+	private static String currentForumID = "";
 	private String url = null;
 	protected NewsListAdapter listAdapter;
-	protected MenuDialog menuDialog ; 
+	protected MenuDialog menuDialog;
 	private ListView listView;
-	private boolean needRefresh = true;
+	private static boolean needRefresh = true;
 	public static LinkedList<Story> storyCache = new LinkedList<Story>();
+	private ImageView mLogo;
+	private final Activity activity= this;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(LOG_TAG, "on Create");
+		Log.d(LOG_TAG, "on Create currentForumID = " + currentForumID);
 		if (getIntent() == null) {
 			Log.d(LOG_TAG, "set default intent");
 			setDefaultIntent();
 		}
 		super.onCreate(savedInstanceState);
-		Log.d(LOG_TAG, "after super.onCreate");
+		String forum_id = getIntent().getStringExtra(Constants.FORUM_ID);
+		Log.d(LOG_TAG, "currentForumID=" + currentForumID + ", from Intent="
+				+ forum_id);
 
 		// get url setting info from intent
-		currentForumID = getIntent().getStringExtra(Constants.FORUM_ID);
-		if (currentForumID == null) {
+		if (currentForumID.isEmpty()) {
+			Log.d(LOG_TAG, "currentForumID is empty");
 			currentForumID = Constants.DEFAULT_FORUM_ID;
 			needRefresh = true;
 		} else {
-			String forum_id = getIntent().getStringExtra(Constants.FORUM_ID);
-			if (forum_id == currentForumID) {needRefresh = false;} else {needRefresh = true;};
+			if (currentForumID.equals(forum_id)) {
+				Log.d(LOG_TAG, "set needRefresh=false");
+				needRefresh = false;
+			} else {
+				Log.d(LOG_TAG, "reset currentForumID");
+				currentForumID = forum_id;
+				needRefresh = true;
+			}
 		}
+		Log.d(LOG_TAG, "currentForumID =" + currentForumID
+				+ ", need refresh = " + needRefresh);
 		url = ForumList.getURLbyID(currentForumID);
-		Log.d(LOG_TAG, "forum url=" + url);
+		
 
 		// TODO: move this to a layout?
 		Log.d(LOG_TAG, "Building Title UI");
@@ -102,12 +116,24 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		listView.setAdapter(listAdapter);
 
 		// load stories
-		Log.d(LOG_TAG, "need refresh = " + needRefresh);
-		if(needRefresh) {
+		if (needRefresh) {
 			listAdapter.addMoreStories(url, 0);
 		} else {
 			listAdapter.addMoreStories(url, 1);
 		}
+		
+		// refresh while click on the logo
+		mLogo= (ImageView)findViewById(R.id.Logo1);
+		mLogo.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	storyCache.clear();
+            	listAdapter = new NewsListAdapter(activity);
+            	listAdapter.notifyDataSetChanged();
+            	listView.setAdapter(listAdapter);
+            	listAdapter.addMoreStories(url, 0);
+            	
+            }
+        });
 	}
 
 	// When first starting up, load the default forum
@@ -119,12 +145,14 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		setIntent(i);
 	}
 
-	//Show full story
+	// Show full story
 	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+
 		Story story = (Story) parent.getAdapter().getItem(position);
-		Log.d(LOG_TAG, "story item clicked at " + story.getPost_id() + "|" + story.getTitle());
+		Log.d(LOG_TAG, "story item clicked at " + story.getPost_id() + "|"
+				+ story.getTitle());
 		Intent intent = new Intent(this, FullStoryActivity.class);
 		intent.putExtra(Constants.STORY_ID, story.getPost_id());
 		intent.putExtra(Constants.STORY_TITLE, story.getTitle());
@@ -139,79 +167,85 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		Intent intent = new Intent(this, NavigationActivity.class);
 		startActivity(intent);
 	}
-	
-	
+
 	public static void addAllToStoryCache(List<Story> stories) {
-	    for (Story story : stories) {
-	      storyCache.add(story);
-	    }
-	  }
+		for (Story story : stories) {
+			storyCache.add(story);
+		}
+	}
+
 	public static void clearStoryCache() {
 		storyCache.clear();
 	}
-	
+
 	/**
-	 * app exit 
+	 * app exit
 	 */
-	@Override 
-	public boolean onKeyDown(int keyCode, KeyEvent event) { 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		Log.d(LOG_TAG, "keyCode = " + keyCode);
-	    if(keyCode == KeyEvent.KEYCODE_BACK) { 
-	    	Log.d(LOG_TAG, "popup exit dialog");
-	    	AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    	builder.setMessage("Are you sure you want to exit?")
-	    	       .setCancelable(false)
-	    	       .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-	    	           public void onClick(DialogInterface dialog, int id) {
-	    	        	   Intent intent = new Intent(Intent.ACTION_MAIN);
-	    	        	   intent.addCategory(Intent.CATEGORY_HOME);
-	    	        	   intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	    	        	   startActivity(intent);
-	    	           }
-	    	       })
-	    	       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-	    	           public void onClick(DialogInterface dialog, int id) {
-	    	                dialog.cancel();
-	    	           }
-	    	       });
-	    	AlertDialog alert = builder.create();
-	    	alert.show();
-	        return true; 
-	    } 
-	    //Pass other events along their way up the chain 
-	    return super.onKeyDown(keyCode, event); 
-	} 
-	
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Log.d(LOG_TAG, "popup exit dialog");
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Are you sure you want to exit?")
+					.setCancelable(false)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									Intent intent = new Intent(
+											Intent.ACTION_MAIN);
+									intent.addCategory(Intent.CATEGORY_HOME);
+									intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+									startActivity(intent);
+								}
+							})
+					.setNegativeButton("No",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			AlertDialog alert = builder.create();
+			alert.show();
+			return true;
+		}
+		// Pass other events along their way up the chain
+		return super.onKeyDown(keyCode, event);
+	}
+
 	/**
 	 * menu dialog
 	 */
-	@Override 
-	public boolean onKeyUp(int keyCode, KeyEvent event) { 
-	    if(keyCode == KeyEvent.KEYCODE_MENU)  { 
-	        if(menuDialog == null) { 
-	            menuDialog = new MenuDialog(this) ; 
-	        }
-	        menuDialog.getWindow().setGravity(Gravity.BOTTOM);
-	        menuDialog.show(); 
-	        return true; 
-	    } 
-	    return super.onKeyUp(keyCode, event);
-	} 
-	
-	private class MenuDialog extends AlertDialog { 
-	    public MenuDialog(Context context)  { 
-	        super(context); 
-	        setTitle("请选择"); 
-	        View menu = getLayoutInflater().inflate(R.layout.menu, null); 
-	        setView(menu); 
-	    } 
-	    @Override 
-	    public boolean onKeyUp(int keyCode, KeyEvent event) { 
-	        if(keyCode == KeyEvent. KEYCODE_MENU) { 
-	            dismiss(); 
-	            return true; 
-	        } 
-	        return super.onKeyUp(keyCode, event); 
-	    }
-	} 
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			if (menuDialog == null) {
+				menuDialog = new MenuDialog(this);
+			}
+			menuDialog.getWindow().setGravity(Gravity.BOTTOM);
+			menuDialog.show();
+			return true;
+		}
+		return super.onKeyUp(keyCode, event);
+	}
+
+	private class MenuDialog extends AlertDialog {
+		public MenuDialog(Context context) {
+			super(context);
+			setTitle("请选择");
+			View menu = getLayoutInflater().inflate(R.layout.menu, null);
+			setView(menu);
+		}
+
+		@Override
+		public boolean onKeyUp(int keyCode, KeyEvent event) {
+			if (keyCode == KeyEvent.KEYCODE_MENU) {
+				dismiss();
+				return true;
+			}
+			return super.onKeyUp(keyCode, event);
+		}
+	}
 }

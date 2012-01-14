@@ -14,41 +14,45 @@
 // limitations under the License.
 
 package org.lvye.util;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-
+import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Author: 姜丝@lvye
- */
 public class HttpHelper {
 
-  /**
-   * A helper function to grab content from a URL.
-   *
-   * @param url URL of the item to download
-   *
-   * @return an input stream to the content. The caller is responsible for
-   * closing the stream. Content will be null in the case of errors.
-   * @throws java.io.IOException if an error occurs loading the url
-   */
-  public static InputStream download(String url) throws IOException {
-    InputStream data = null;
-    //Log.d(LOG_TAG, "Starting download: " + url);
-    HttpClient http = new DefaultHttpClient();
-    HttpGet method = new HttpGet(url);
+	/**
+	 * A helper function to grab content from a URL.
+	 * 
+	 * @param url
+	 *            URL of the item to download
+	 * 
+	 * @return an input stream to the content. The caller is responsible for
+	 *         closing the stream. Content will be null in the case of errors.
+	 * @throws java.io.IOException
+	 *             if an error occurs loading the url
+	 */
 
-    try {
-      HttpResponse response = http.execute(method);
-      data = response.getEntity().getContent();
-    } catch (IllegalStateException e) {
-     //Log.e(LOG_TAG, "error downloading", e);
-    }
-    //Log.d(LOG_TAG, "Download complete");
-    return data;
-  }
+	public static final String LOG_TAG = HttpHelper.class.getName();
+
+	public static InputStream download(String url) throws IOException {
+
+		InputStream data = null;
+		Log.d(LOG_TAG, "Starting download: " + url);
+		HttpClient http = new DefaultHttpClient();
+		HttpGet method = new HttpGet(url);
+
+		try {
+			HttpResponse response = http.execute(method);
+			data = response.getEntity().getContent();
+		} catch (IllegalStateException e) {
+			Log.e(LOG_TAG, "error downloading", e);
+		}
+		Log.d(LOG_TAG, "Download complete");
+		return data;
+	}
 }

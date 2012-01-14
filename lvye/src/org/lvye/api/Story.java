@@ -22,6 +22,11 @@ import java.util.List;
 
 import android.util.Log;
 
+/**
+ * 
+ * @author 姜丝@lvye.org
+ *
+ */
 public class Story {
 	public static final String LOG_TAG = Story.class.getName();
 	private String title= "";
@@ -41,10 +46,11 @@ public class Story {
 		this.size = size;
 	}
 	
-	public Story(String title, String post_id, String size) {
+	public Story(String title, String post_id, String size, String author) {
 		this.title = title;
 		this.setPost_id(post_id);
 		this.size = size;
+		this.author = author;
 	}
 	
 	public Story (String title) {
@@ -52,7 +58,7 @@ public class Story {
 	}
 	
 	public String getTeaser() {
-		return "楼主: xxx\t" + "大小: " + this.size;
+		return "楼主:" + this.author + "     字节数:" + this.size;
 	}
 	
 	@Override
@@ -96,7 +102,10 @@ public class Story {
 						s[0].length() - 1);
 				String topic = s[1];
 				String size = s2.substring(8, s2.length() - 1);
-				Story story = new Story (topic, post_id, size);
+				
+				String s3 = t.substring(t.indexOf("uname="), t.length());
+				String author = s3.substring(s3.indexOf("'>")+2, s3.indexOf("</a>"));
+				Story story = new Story (topic, post_id, size, author);
 				result.add(story);
 			}
 			return result;

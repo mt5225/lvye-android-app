@@ -1,4 +1,4 @@
-#Fri Jan 13 12:33:07 CST 2012
+#Sat Jan 14 19:01:15 CST 2012
 eclipse.preferences.version=1
 encoding//src/org/lvye/FullStoryActivity.java=UTF-8
 encoding//src/org/lvye/LvyeActivity.java=UTF-8
@@ -7,6 +7,7 @@ encoding//src/org/lvye/NavigationActivity.java=UTF-8
 encoding//src/org/lvye/NewsListAdapter.java=UTF-8
 encoding//src/org/lvye/RootActivity.java=UTF-8
 encoding//src/org/lvye/api/Client.java=UTF-8
+encoding//src/org/lvye/api/Forum.java=UTF-8
 encoding//src/org/lvye/api/ForumList.java=UTF-8
 encoding//src/org/lvye/api/Story.java=UTF-8
 encoding//src/org/lvye/util/HttpHelper.java=UTF-8

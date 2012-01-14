@@ -22,7 +22,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 /**
@@ -35,7 +37,10 @@ public class FullStoryActivity extends Activity {
 	private String storyID ="";
 	private String currentForumID="";
 	private String title="";
-	
+	final Activity activity = this;
+	private ProgressBar mProgress;
+    public int mProgressStatus = 0;
+    
 	@Override 
     public void onCreate(Bundle savedInstanceState) { 
 		Log.d(LOG_TAG, "on Create");
@@ -50,11 +55,20 @@ public class FullStoryActivity extends Activity {
         //set title
         TextView titleView = (TextView)findViewById(R.id.StoryTitle);
         titleView.setText(title);
+        mProgress = (ProgressBar) findViewById(R.id.progressBar1);
         
         //load the story page
         WebView webview = (WebView)findViewById(R.id.webView1);
-        //Enable JavaScript support 
         webview.getSettings().setJavaScriptEnabled(true); 
+        webview.setWebChromeClient(new WebChromeClient() {
+        	   public void onProgressChanged(WebView view, int progress) {
+        	       Log.d(LOG_TAG, "progress = " + progress);
+        	       if(progress < 100){
+        	       mProgress.setProgress(progress);}else {
+        	    	   mProgress.setVisibility(View.GONE);
+        	       }
+        	   }
+        	 });
         
         //load the page content
         String url = ForumList.getStoryURLbyPostID(storyID);

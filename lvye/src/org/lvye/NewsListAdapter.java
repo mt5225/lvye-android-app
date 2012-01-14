@@ -35,6 +35,11 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * 
+ * @author 姜丝@lvye.org
+ *
+ */
 public class NewsListAdapter extends ArrayAdapter<Story> {
 	private static final String LOG_TAG = NewsListAdapter.class.getName();
 	private final LayoutInflater inflater;
@@ -55,10 +60,14 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 		public void handleMessage(Message msg) {
 			if (msg.what >= 0) {
 				if (moreStories != null) {
-					for (Story s : moreStories) {
-						add(s);
+					if (moreStories.size() >= 3) {
+						for (Story s : moreStories) {
+							add(s);
+						}
+						add(new Story("END"));
+					} else {
+						Log.e(LOG_TAG, "论坛数据格式解析错误");
 					}
-					add(new Story("END"));
 
 				}
 			} else {
@@ -88,10 +97,11 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 			rootActivity.startIndeterminateProgressIndicator();
 		}
 		if (status == 0) {
-			LvyeActivity.clearStoryCache();
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
+					Log.d(LOG_TAG, "clear cache and reload stories");
+					LvyeActivity.clearStoryCache();
 					if (getMoreStories(url)) {
 						handler.sendEmptyMessage(0);
 					} else {
@@ -100,6 +110,7 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 				}
 			}).start();
 		} else if (status == 1) {
+			Log.d(LOG_TAG, "use cached stories");
 			moreStories = LvyeActivity.storyCache;
 			handler.sendEmptyMessage(0);
 		} else {
@@ -144,17 +155,18 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 				.findViewById(R.id.NewsItemTeaserText);
 		TextView name = (TextView) convertView
 				.findViewById(R.id.NewsItemNameText);
-		if (!story.getTitle().equals("END")) {
+		if (story.getTitle().equals("END")) {
+			// title='END' marker means it's the end of the list.
+			teaser.setVisibility(View.INVISIBLE);
+			name.setTypeface(name.getTypeface(), Typeface.ITALIC);
+			name.setText(R.string.msg_load_more);
+		} else {
+
 			name.setText(Html.fromHtml(story.toString()));
 			name.setTypeface(name.getTypeface(), Typeface.BOLD);
 			String teaserText = story.getTeaser();
 			teaser.setText(Html.fromHtml(teaserText));
 			teaser.setVisibility(View.VISIBLE);
-		} else {
-			// title='END' marker means it's the end of the list.
-			teaser.setVisibility(View.INVISIBLE);
-			name.setTypeface(name.getTypeface(), Typeface.ITALIC);
-			name.setText(R.string.msg_load_more);
 		}
 		return convertView;
 	}

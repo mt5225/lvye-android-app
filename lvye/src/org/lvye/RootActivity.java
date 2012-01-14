@@ -26,7 +26,7 @@ import android.widget.ProgressBar;
 
 /**
  * 
- * @author 姜丝@lvye.org A base class for all Activities that want to display the
+ * A base class for all Activities that want to display the
  *         default layout,
  * 
  */
@@ -40,10 +40,7 @@ public abstract class RootActivity extends ActivityGroup implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(LOG_TAG, "onCreate R.layout.main");
-		// set main view
 		setContentView(R.layout.main);
-		Log.d(LOG_TAG, "create the navigation view");
-		Log.d(LOG_TAG, "create the progress indicator");
 		progressIndicator = (ProgressBar) findViewById(R.id.WindowProgressIndicator);
 	}
 	
