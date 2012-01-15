@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 /**
@@ -34,9 +35,13 @@ public class FullStoryActivity extends Activity {
 	public static final String LOG_TAG = FullStoryActivity.class.getName();
 	private String storyID = "";
 	private String title = "";
+	private String url="";
 	final Activity activity = this;
 	private ProgressBar mProgress;
 	public int mProgressStatus = 0;
+	private WebView webview;
+	private ImageView mLogo;
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -46,10 +51,11 @@ public class FullStoryActivity extends Activity {
 
 		// get story info from intent message
 		storyID = getIntent().getStringExtra(Constants.STORY_ID);
+		title = getIntent().getStringExtra(Constants.STORY_TITLE);
 		mProgress = (ProgressBar) findViewById(R.id.progressBar1);
 
 		// load the story page
-		WebView webview = (WebView) findViewById(R.id.webView1);
+		webview = (WebView) findViewById(R.id.webView1);
 		webview.getSettings().setJavaScriptEnabled(true);
 		webview.setWebChromeClient(new WebChromeClient() {
 			public void onProgressChanged(WebView view, int progress) {
@@ -61,11 +67,19 @@ public class FullStoryActivity extends Activity {
 				}
 			}
 		});
-
 		// load the page content
-		String url = ForumList.getStoryURLbyPostID(storyID);
+		url = ForumList.getStoryURLbyPostID(storyID);
 		Log.d(LOG_TAG, url);
 		webview.loadUrl(url);
+		
+		//refresh content while user click logo
+		mLogo= (ImageView)findViewById(R.id.imageView1);
+		mLogo.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+            	mProgress.setVisibility(View.VISIBLE);
+            	webview.loadUrl(url);      	
+            }
+        });
 	}
 
 	// Share the story

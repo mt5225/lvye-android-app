@@ -57,7 +57,7 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 	private static boolean needRefresh = true;
 	public static LinkedList<Story> storyCache = new LinkedList<Story>();
 	private ImageView mLogo;
-	private final Activity activity= this;
+	private final Activity activity = this;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -83,14 +83,15 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 				needRefresh = false;
 			} else {
 				Log.d(LOG_TAG, "reset currentForumID");
-				currentForumID = forum_id;
+				if (forum_id != null) {
+					currentForumID = forum_id;
+				}
 				needRefresh = true;
 			}
 		}
 		Log.d(LOG_TAG, "currentForumID =" + currentForumID
 				+ ", need refresh = " + needRefresh);
 		url = ForumList.getURLbyID(currentForumID);
-		
 
 		// TODO: move this to a layout?
 		Log.d(LOG_TAG, "Building Title UI");
@@ -121,19 +122,19 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		} else {
 			listAdapter.addMoreStories(url, 1);
 		}
-		
+
 		// refresh while click on the logo
-		mLogo= (ImageView)findViewById(R.id.Logo1);
+		mLogo = (ImageView) findViewById(R.id.Logo1);
 		mLogo.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	storyCache.clear();
-            	listAdapter = new NewsListAdapter(activity);
-            	listAdapter.notifyDataSetChanged();
-            	listView.setAdapter(listAdapter);
-            	listAdapter.addMoreStories(url, 0);
-            	
-            }
-        });
+			public void onClick(View v) {
+				storyCache.clear();
+				listAdapter = new NewsListAdapter(activity);
+				listAdapter.notifyDataSetChanged();
+				listView.setAdapter(listAdapter);
+				listAdapter.addMoreStories(url, 0);
+
+			}
+		});
 	}
 
 	// When first starting up, load the default forum
@@ -198,6 +199,7 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 									intent.addCategory(Intent.CATEGORY_HOME);
 									intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 									startActivity(intent);
+									//activity.finish();
 								}
 							})
 					.setNegativeButton("No",
