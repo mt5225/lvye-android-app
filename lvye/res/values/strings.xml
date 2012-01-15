@@ -5,6 +5,5 @@
     <string name="app_name">绿野.org</string>
     <string name="msg_check_connection">网络链接超时</string>
     <string name="msg_load_more">更多 ... </string>
-    <string name="msg_share">分享</string>
     <string name="msg_share_story">来自绿野ORG分享:</string>
 </resources>

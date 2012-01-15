@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="left" >
-
+
 <LinearLayout
     android:id="@+id/StoryBar"
     android:layout_width="fill_parent"
@@ -11,35 +11,31 @@
     android:background="@drawable/header"
     android:gravity="center"
     android:orientation="horizontal" >
-    <ImageButton
-        android:id="@+id/BackToForumListButton"
+    <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:onClick="onBackToTopicList"
-        android:layout_margin="10dip"
-        android:src="@drawable/minus_normal"/>  
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center" >
 
-    <TextView
-        android:id="@+id/StoryTitle"
-        android:layout_width="192dp"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:lines="1"
-        android:textAppearance="@style/ViewStoryTitleText" />
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/lvye_logo" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/StoryShareButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="6dp"
-        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:layout_marginRight="10dip"
         android:drawableLeft="@drawable/share"
-        android:text="@string/msg_share"
-        android:background="@drawable/story_button_background"
-        android:onClick="onShare"/>
-    
+        android:onClick="onShare" />
 </LinearLayout>
+
  <FrameLayout
         android:id="@+id/StoryContent"
         android:layout_width="fill_parent"

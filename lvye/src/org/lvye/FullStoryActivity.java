@@ -16,7 +16,6 @@
 package org.lvye;
 
 import org.lvye.api.ForumList;
-import org.lvye.api.Story;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,74 +24,59 @@ import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 /**
  * 
  * @author 姜丝@lvye.org
- *
+ * 
  */
 public class FullStoryActivity extends Activity {
 	public static final String LOG_TAG = FullStoryActivity.class.getName();
-	private String storyID ="";
-	private String currentForumID="";
-	private String title="";
+	private String storyID = "";
+	private String title = "";
 	final Activity activity = this;
 	private ProgressBar mProgress;
-    public int mProgressStatus = 0;
-    
-	@Override 
-    public void onCreate(Bundle savedInstanceState) { 
-		Log.d(LOG_TAG, "on Create");
-        super.onCreate(savedInstanceState); 
-        setContentView(R.layout.story);
-        
-        //get story info from intent message      
-        storyID = getIntent().getStringExtra(Constants.STORY_ID);
-        currentForumID = getIntent().getStringExtra(Constants.FORUM_ID);
-        title = getIntent().getStringExtra(Constants.STORY_TITLE);
-        
-        //set title
-        TextView titleView = (TextView)findViewById(R.id.StoryTitle);
-        titleView.setText(title);
-        mProgress = (ProgressBar) findViewById(R.id.progressBar1);
-        
-        //load the story page
-        WebView webview = (WebView)findViewById(R.id.webView1);
-        webview.getSettings().setJavaScriptEnabled(true); 
-        webview.setWebChromeClient(new WebChromeClient() {
-        	   public void onProgressChanged(WebView view, int progress) {
-        	       Log.d(LOG_TAG, "progress = " + progress);
-        	       if(progress < 100){
-        	       mProgress.setProgress(progress);}else {
-        	    	   mProgress.setVisibility(View.GONE);
-        	       }
-        	   }
-        	 });
-        
-        //load the page content
-        String url = ForumList.getStoryURLbyPostID(storyID);
-        Log.d(LOG_TAG, url);
-        webview.loadUrl(url); 
-    } 
+	public int mProgressStatus = 0;
 
-	// Show the Forum Selector
-		public void onBackToTopicList(View v) {
-			Log.d(LOG_TAG, "back to topic list");
-			Intent intent = new Intent(this, LvyeActivity.class);
-			intent.putExtra(Constants.FORUM_ID, currentForumID);
-			startActivity(intent);
-		}
-		
-    //Share the story
-		public void onShare(View v) {
-			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, title);
-            String msg = "绿野ORG分享: " + title; 
-            msg = msg + "  " + ForumList.getStoryURLbyPostID(storyID);
-            shareIntent.putExtra(Intent.EXTRA_TEXT, msg);
-            shareIntent.setType("text/plain");
-            startActivity(Intent.createChooser(shareIntent,
-                getString(R.string.msg_share_story)));
-		}
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		Log.d(LOG_TAG, "on Create");
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.story);
+
+		// get story info from intent message
+		storyID = getIntent().getStringExtra(Constants.STORY_ID);
+		mProgress = (ProgressBar) findViewById(R.id.progressBar1);
+
+		// load the story page
+		WebView webview = (WebView) findViewById(R.id.webView1);
+		webview.getSettings().setJavaScriptEnabled(true);
+		webview.setWebChromeClient(new WebChromeClient() {
+			public void onProgressChanged(WebView view, int progress) {
+				Log.d(LOG_TAG, "progress = " + progress);
+				if (progress < 100) {
+					mProgress.setProgress(progress);
+				} else {
+					mProgress.setVisibility(View.GONE);
+				}
+			}
+		});
+
+		// load the page content
+		String url = ForumList.getStoryURLbyPostID(storyID);
+		Log.d(LOG_TAG, url);
+		webview.loadUrl(url);
+	}
+
+	// Share the story
+	public void onShare(View v) {
+		Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+		shareIntent.putExtra(Intent.EXTRA_SUBJECT, title);
+		String msg = "绿野ORG分享: " + title;
+		msg = msg + "  " + ForumList.getStoryURLbyPostID(storyID);
+		shareIntent.putExtra(Intent.EXTRA_TEXT, msg);
+		shareIntent.setType("text/plain");
+		startActivity(Intent.createChooser(shareIntent,
+				getString(R.string.msg_share_story)));
+	}
 }
