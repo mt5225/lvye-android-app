@@ -19,22 +19,22 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-
 import android.util.Log;
 
 /**
  * 
  * @author 姜丝@lvye.org
- *
+ * 
  */
 public class Story {
 	public static final String LOG_TAG = Story.class.getName();
-	private String title= "";
+	private String title = "";
 	private String subtitle = "";
 	private String post_id = "";
 	private String lastModifiedDate = "";
 	private String author = "";
-	private String size= "";
+	private String size = "";
+	private boolean sticky = false;
 
 	public Story(String title, String subtitle, String post_id,
 			String lastModifiedDate, String author, String size) {
@@ -45,27 +45,27 @@ public class Story {
 		this.author = author;
 		this.size = size;
 	}
-	
+
 	public Story(String title, String post_id, String size, String author) {
 		this.title = title;
 		this.setPost_id(post_id);
 		this.size = size;
 		this.author = author;
 	}
-	
-	public Story (String title) {
+
+	public Story(String title) {
 		this.title = title;
 	}
-	
+
 	public String getTeaser() {
 		return "楼主:" + this.author + "     字节数:" + this.size;
 	}
-	
+
 	@Override
 	public String toString() {
-	    return title;
-	  }
-	
+		return title;
+	}
+
 	public String getTitle() {
 		return title;
 	}
@@ -78,16 +78,32 @@ public class Story {
 	}
 
 	/**
-	 * @param post_id the post_id to set
+	 * @param post_id
+	 *            the post_id to set
 	 */
 	public void setPost_id(String post_id) {
 		this.post_id = post_id;
 	}
 
 	/**
+	 * @return the sticky
+	 */
+	public boolean isSticky() {
+		return sticky;
+	}
+
+	/**
+	 * @param sticky
+	 *            the sticky to set
+	 */
+	public void setSticky(boolean sticky) {
+		this.sticky = sticky;
+	}
+
+	/**
 	 * 
 	 * parse http response message and create story object
-	 *
+	 * 
 	 */
 	public static class StoryFactory {
 		public static List<Story> parseStories(ArrayList<String> httpResp) {
@@ -102,10 +118,17 @@ public class Story {
 						s[0].length() - 1);
 				String topic = s[1];
 				String size = s2.substring(8, s2.length() - 1);
-				
+
 				String s3 = t.substring(t.indexOf("uname="), t.length());
-				String author = s3.substring(s3.indexOf("'>")+2, s3.indexOf("</a>"));
-				Story story = new Story (topic, post_id, size, author);
+				String author = s3.substring(s3.indexOf("'>") + 2,
+						s3.indexOf("</a>"));
+				Story story = new Story(topic, post_id, size, author);
+				// if a sticky story
+				if (t.contains("sticky")) {
+					story.setSticky(true);
+				} else {
+					story.setSticky(false);
+				}
 				result.add(story);
 			}
 			return result;

@@ -56,7 +56,7 @@ public class FullStoryActivity extends Activity {
 
 		// load the story page
 		webview = (WebView) findViewById(R.id.webView1);
-		webview.getSettings().setJavaScriptEnabled(true);
+		webview.getSettings().setJavaScriptEnabled(false);
 		webview.setWebChromeClient(new WebChromeClient() {
 			public void onProgressChanged(WebView view, int progress) {
 				Log.d(LOG_TAG, "progress = " + progress);

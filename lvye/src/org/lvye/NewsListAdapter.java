@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -155,6 +156,12 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 				.findViewById(R.id.NewsItemTeaserText);
 		TextView name = (TextView) convertView
 				.findViewById(R.id.NewsItemNameText);
+		ImageView storyType = (ImageView) convertView.findViewById(R.id.NewsItemImage);
+		if (story.isSticky()) {
+			storyType.setImageDrawable(convertView.getResources().getDrawable(R.drawable.stickytop));;
+		} else {
+			storyType.setImageDrawable(convertView.getResources().getDrawable(R.drawable.topic));;
+		}
 		if (story.getTitle().equals("END")) {
 			// title='END' marker means it's the end of the list.
 			teaser.setVisibility(View.INVISIBLE);

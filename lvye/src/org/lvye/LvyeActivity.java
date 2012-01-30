@@ -49,12 +49,11 @@ import android.widget.AdapterView.OnItemClickListener;
 public class LvyeActivity extends RootActivity implements OnItemClickListener {
 
 	private static final String LOG_TAG = LvyeActivity.class.getName();
-	private static String currentForumID = "";
+	public static String currentForumID = "";
 	private String url = null;
 	protected NewsListAdapter listAdapter;
 	protected MenuDialog menuDialog;
 	private ListView listView;
-	private static boolean needRefresh = true;
 	public static LinkedList<Story> storyCache = new LinkedList<Story>();
 	private ImageView mLogo;
 	private final Activity activity = this;
@@ -68,32 +67,18 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 			setDefaultIntent();
 		}
 		super.onCreate(savedInstanceState);
-		String forum_id = getIntent().getStringExtra(Constants.FORUM_ID);
-		Log.d(LOG_TAG, "currentForumID=" + currentForumID + ", from Intent="
-				+ forum_id);
-
 		// get url setting info from intent
+		
 		if (currentForumID.isEmpty()) {
-			Log.d(LOG_TAG, "currentForumID is empty");
 			currentForumID = Constants.DEFAULT_FORUM_ID;
-			needRefresh = true;
 		} else {
-			if (currentForumID.equals(forum_id)) {
-				Log.d(LOG_TAG, "set needRefresh=false");
-				needRefresh = false;
-			} else {
-				Log.d(LOG_TAG, "reset currentForumID");
-				if (forum_id != null) {
-					currentForumID = forum_id;
-				}
-				needRefresh = true;
-			}
+		    currentForumID = getIntent().getStringExtra(Constants.FORUM_ID);
 		}
-		Log.d(LOG_TAG, "currentForumID =" + currentForumID
-				+ ", need refresh = " + needRefresh);
+		Log.d(LOG_TAG, "currentForumID =" + currentForumID);
 		url = ForumList.getURLbyID(currentForumID);
 
-		// TODO: move this to a layout?
+		//Built the indicator bar under logo bar 
+		//TODO: move this to a layout?
 		Log.d(LOG_TAG, "Building Title UI");
 		ViewGroup container = (ViewGroup) findViewById(R.id.TitleContent);
 		ViewGroup.inflate(this, R.layout.title, container);
@@ -106,10 +91,10 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		titleText
 				.setTextColor(getResources().getColor(R.color.news_title_text));
 
+		//Built story list
 		Log.d(LOG_TAG, "Build R.layout.news UI");
 		container = (ViewGroup) findViewById(R.id.Content);
 		ViewGroup.inflate(this, R.layout.news, container);
-
 		Log.d(LOG_TAG, "Building post listView");
 		listView = (ListView) findViewById(R.id.ListView01);
 		listView.setOnItemClickListener(this);
@@ -117,11 +102,8 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		listView.setAdapter(listAdapter);
 
 		// load stories
-		if (needRefresh) {
-			listAdapter.addMoreStories(url, 0);
-		} else {
-			listAdapter.addMoreStories(url, 1);
-		}
+		listAdapter.addMoreStories(url, 0);
+		
 
 		// refresh while click on the logo
 		mLogo = (ImageView) findViewById(R.id.Logo1);

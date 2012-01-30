@@ -39,10 +39,9 @@ import android.widget.AdapterView.OnItemClickListener;
 /**
  * 
  * @author 姜丝@lvye.org
- *
+ * 
  */
-public class NavigationActivity extends Activity implements
-		OnItemClickListener {
+public class NavigationActivity extends Activity implements OnItemClickListener {
 	private static final String LOG_TAG = NavigationActivity.class.getName();
 	private ListView listView;
 
@@ -63,11 +62,16 @@ public class NavigationActivity extends Activity implements
 		Log.d(LOG_TAG, "select forum " + forum.getName());
 		String forumID = ForumList.getForumIDByName(forum.getName());
 		if (forumID != "999") {
-			Intent intent = new Intent(parent.getContext(), LvyeActivity.class)
-					.putExtra(Constants.FORUM_ID, forumID);
-			startActivity(intent);
+			if (forumID.equals(LvyeActivity.currentForumID)) { //donot need update, self-destroy
+				this.finish();
+			} else {
+				Intent intent = new Intent(parent.getContext(),  //update the stories list by rebuilt
+						LvyeActivity.class).putExtra(Constants.FORUM_ID,
+						forumID);
+				startActivity(intent);
+			}
 		}
-	} 
+	}
 
 	private class ForumListAdapter extends ArrayAdapter<Forum> {
 
@@ -86,16 +90,16 @@ public class NavigationActivity extends Activity implements
 			}
 
 			Forum forum = getItem(position);
-			//Log.d(LOG_TAG, "disploy forum name:" + forum.getName());
+			// Log.d(LOG_TAG, "disploy forum name:" + forum.getName());
 			TextView textView = (TextView) convertView
 					.findViewById(R.id.ForumTitle);
-			
-			if (forum.getId() == "999") {			
+
+			if (forum.getId() == "999") {
 				convertView.setBackgroundDrawable(getResources().getDrawable(
 						R.drawable.news_list_title_background));
 				convertView.getLayoutParams().height = DisplayUtils
 						.convertToDIP(getContext(), 40);
-				
+
 				textView.setTextColor(getResources().getColor(
 						R.color.news_title_text));
 
