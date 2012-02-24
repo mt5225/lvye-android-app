@@ -134,18 +134,22 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		Log.d(LOG_TAG, "story item clicked at " + story.getPost_id() + " | "
 				+ story.getTitle());
 		if (story.getTitle().equals("END")) {
-			Log.d(LOG_TAG, "load more stories ... ...");
-			listAdapter.addMoreStories(url, 2);
-			listAdapter.notifyDataSetChanged();
-			
+			Log.d(LOG_TAG, "load more stories ... ...");		
+			listAdapter.addMoreStories(url, 2);	
+			listAdapter.notifyDataSetChanged();			
 		} else {
 			Intent intent = new Intent(this, FullStoryActivity.class);
 			intent.putExtra(Constants.STORY_ID, story.getPost_id());
 			intent.putExtra(Constants.STORY_TITLE, story.getTitle());
+			intent.putExtra(Constants.HAS_IMAGE, story.getHasImage());
 			intent.putExtra(Constants.FORUM_ID, currentForumID);
 			startActivity(intent);
 		}
 
+	}
+
+	public ListView getListView() {
+		return listView;
 	}
 
 	// Show the Forum Selector

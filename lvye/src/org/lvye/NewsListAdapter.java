@@ -45,13 +45,18 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 	private static final String LOG_TAG = NewsListAdapter.class.getName();
 	private final LayoutInflater inflater;
 	private RootActivity rootActivity = null;
+	private LvyeActivity lvyeActivity = null;
 	private List<Story> moreStories = null;
 	private static int page_index = 0;
+	private NewsListAdapter newsListAdapter = this;
 
 	public NewsListAdapter(Context context) {
 		super(context, R.layout.news_item);
 		if (context instanceof RootActivity) {
 			rootActivity = (RootActivity) context;
+		}
+		if (context instanceof LvyeActivity) {
+			lvyeActivity = (LvyeActivity) context;
 		}
 		inflater = LayoutInflater.from(getContext());
 
@@ -68,6 +73,10 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 						}
 						Story loadmore = new Story("END");
 						add(loadmore);
+						if (page_index > 0) {  // scroll up a little
+							lvyeActivity.getListView().setSelection(51*page_index -3);
+						}
+
 					} else {
 						Log.e(LOG_TAG, "msg fomat error");
 					}
@@ -120,16 +129,20 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 			moreStories = LvyeActivity.storyCache;
 			handler.sendEmptyMessage(0);
 			break;
-		
-		case 2:		
+
+		case 2:
 			page_index++;
 			Log.d(LOG_TAG, "load more story with index " + page_index);
-			if (getMoreStories(url + "&start=" + page_index * 50)) {
-				handler.sendEmptyMessage(0);
-			} else {
-				handler.sendEmptyMessage(-1);
-			}
-			this.remove(this.getItem(50*(page_index)));
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					if (getMoreStories(url + "&start=" + page_index * 50)) {
+						handler.sendEmptyMessage(0);
+					} else {
+						handler.sendEmptyMessage(-1);
+					}
+				}
+			}).start();
 			break;
 		}
 	}
@@ -159,30 +172,25 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 	public View getView(final int position, View convertView,
 			final ViewGroup parent) {
 
-		if (convertView == null) {
-			convertView = inflater.inflate(R.layout.news_item, parent, false);
-		}
+		convertView = inflater.inflate(R.layout.news_item, parent, false);
 
 		Story story = getItem(position);
+		Log.d(LOG_TAG,
+				"current position = " + position + " " + story.toString());
 
-		Log.d(LOG_TAG, "current position =" + position + story.toString());
+		if ((newsListAdapter.getCount() - position) > 10   // if it is a deprecated "load more"
+				&& story.getTitle().equals("END")) {
+			return convertView;
+		}
+
 		TextView teaser = (TextView) convertView
 				.findViewById(R.id.NewsItemTeaserText);
 		TextView name = (TextView) convertView
 				.findViewById(R.id.NewsItemNameText);
 		ImageView storyType = (ImageView) convertView
 				.findViewById(R.id.NewsItemImage);
-		if (story.isSticky()) {
-			storyType.setImageDrawable(convertView.getResources().getDrawable(
-					R.drawable.stickytop));
-			;
-		} else {
-			storyType.setImageDrawable(convertView.getResources().getDrawable(
-					R.drawable.topic));
-			;
-		}
-		if (story.getTitle().equals("END")) {
-			// title='END' marker means it's the end of the list.
+
+		if (story.getTitle().equals("END")) { // end of topics, show "load more"
 			name.setTypeface(name.getTypeface(), Typeface.ITALIC);
 			name.setText(R.string.msg_load_more);
 			teaser.setText(Html.fromHtml(rootActivity
@@ -190,12 +198,24 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 			teaser.setVisibility(View.VISIBLE);
 			storyType.setVisibility(View.INVISIBLE);
 		} else {
-
-			name.setText(Html.fromHtml(story.toString()));
+			name.setText(Html.fromHtml(story.getTitle()));
 			name.setTypeface(name.getTypeface(), Typeface.BOLD);
 			String teaserText = story.getTeaser();
 			teaser.setText(Html.fromHtml(teaserText));
 			teaser.setVisibility(View.VISIBLE);
+			if (story.isSticky()) {
+				storyType.setImageDrawable(convertView.getResources()
+						.getDrawable(R.drawable.stickytop));
+			} else {
+				storyType.setImageDrawable(convertView.getResources()
+						.getDrawable(R.drawable.topic));
+			}
+			if (story.getHasImage()) {
+				ImageView img = (ImageView) convertView
+						.findViewById(R.id.hasImage);
+				img.setImageDrawable(convertView.getResources().getDrawable(
+						R.drawable.has_img));
+			}
 		}
 		return convertView;
 	}

@@ -35,13 +35,13 @@ public class FullStoryActivity extends Activity {
 	public static final String LOG_TAG = FullStoryActivity.class.getName();
 	private String storyID = "";
 	private String title = "";
-	private String url="";
+	private String url = "";
+	private Boolean has_image = false;
 	final Activity activity = this;
 	private ProgressBar mProgress;
 	public int mProgressStatus = 0;
 	private WebView webview;
 	private ImageView mLogo;
-	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,10 +53,15 @@ public class FullStoryActivity extends Activity {
 		storyID = getIntent().getStringExtra(Constants.STORY_ID);
 		title = getIntent().getStringExtra(Constants.STORY_TITLE);
 		mProgress = (ProgressBar) findViewById(R.id.progressBar1);
+		has_image = getIntent().getBooleanExtra(Constants.HAS_IMAGE,false);
 
 		// load the story page
 		webview = (WebView) findViewById(R.id.webView1);
 		webview.getSettings().setJavaScriptEnabled(false);
+		if (has_image) {
+			webview.getSettings().setLoadWithOverviewMode(true);
+			webview.getSettings().setUseWideViewPort(true);
+		}
 		webview.setWebChromeClient(new WebChromeClient() {
 			public void onProgressChanged(WebView view, int progress) {
 				Log.d(LOG_TAG, "progress = " + progress);
@@ -71,15 +76,15 @@ public class FullStoryActivity extends Activity {
 		url = ForumList.getStoryURLbyPostID(storyID);
 		Log.d(LOG_TAG, url);
 		webview.loadUrl(url);
-		
-		//refresh content while user click logo
-		mLogo= (ImageView)findViewById(R.id.imageView1);
+
+		// refresh content while user click logo
+		mLogo = (ImageView) findViewById(R.id.imageView1);
 		mLogo.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            	mProgress.setVisibility(View.VISIBLE);
-            	webview.loadUrl(url);      	
-            }
-        });
+			public void onClick(View v) {
+				mProgress.setVisibility(View.VISIBLE);
+				webview.loadUrl(url);
+			}
+		});
 	}
 
 	// Share the story

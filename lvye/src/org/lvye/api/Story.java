@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.util.Log;
+
 /**
  * 
  * @author 姜丝@lvye.org
@@ -27,21 +29,28 @@ import java.util.List;
 public class Story {
 	public static final String LOG_TAG = Story.class.getName();
 	private String title = "";
-	private String subtitle = "";
 	private String post_id = "";
 	private String lastModifiedDate = "";
+	private Boolean hasImage = false;
+	
+	public String getLastModifiedDate() {
+		return lastModifiedDate;
+	}
+
+	public void setLastModifiedDate(String lastModifiedDate) {
+		this.lastModifiedDate = lastModifiedDate;
+	}
+
 	private String author = "";
 	private String size = "";
 	private boolean sticky = false;
 
-	public Story(String title, String subtitle, String post_id,
-			String lastModifiedDate, String author, String size) {
-		this.title = title;
-		this.subtitle = subtitle;
-		this.setPost_id(post_id);
-		this.lastModifiedDate = lastModifiedDate;
-		this.author = author;
-		this.size = size;
+	public Boolean getHasImage() {
+		return hasImage;
+	}
+
+	public void setHasImage(Boolean hasImage) {
+		this.hasImage = hasImage;
 	}
 
 	public Story(String title, String post_id, String size, String author) {
@@ -56,17 +65,17 @@ public class Story {
 	}
 
 	public String getTeaser() {
-		return "楼主:" + this.author + "     字节数:" + this.size;
+		return "楼主:<strong>" + this.author + "</strong><br>发表于:" + this.lastModifiedDate + " 字节数:" + this.size;
 	}
 	
 
 	@Override
 	public String toString() {
-		return title;
+		return  hasImage.toString() + "_" +title + "_" ;
 	}
 
 	public String getTitle() {
-		return title;
+		return  title;
 	}
 
 	/**
@@ -122,11 +131,19 @@ public class Story {
 				String author = s3.substring(s3.indexOf("'>") + 2,
 						s3.indexOf("</a>"));
 				Story story = new Story(topic, post_id, size, author);
+				
+				String s4 = t.substring(t.indexOf("nowrap align=center"), t.length());
+				String date = s4.substring(s4.indexOf(">") + 1, s4.indexOf("</td>"));
+				story.setLastModifiedDate(date);
 				// if a sticky story
 				if (t.contains("sticky")) {
 					story.setSticky(true);
 				} else {
 					story.setSticky(false);
+				}
+				
+				if (t.contains("img.gif")) {
+					story.setHasImage(true);
 				}
 				result.add(story);
 			}
