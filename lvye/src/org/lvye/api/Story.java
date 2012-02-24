@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import android.util.Log;
-
 /**
  * 
  * @author 姜丝@lvye.org
@@ -60,6 +58,7 @@ public class Story {
 	public String getTeaser() {
 		return "楼主:" + this.author + "     字节数:" + this.size;
 	}
+	
 
 	@Override
 	public String toString() {

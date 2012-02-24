@@ -39,13 +39,14 @@ import android.widget.Toast;
 /**
  * 
  * @author 姜丝@lvye.org
- *
+ * 
  */
 public class NewsListAdapter extends ArrayAdapter<Story> {
 	private static final String LOG_TAG = NewsListAdapter.class.getName();
 	private final LayoutInflater inflater;
 	private RootActivity rootActivity = null;
 	private List<Story> moreStories = null;
+	private static int page_index = 0;
 
 	public NewsListAdapter(Context context) {
 		super(context, R.layout.news_item);
@@ -59,15 +60,16 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 	private final Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			if (msg.what >= 0) {
+			if (msg.what == 0) {
 				if (moreStories != null) {
 					if (moreStories.size() >= 3) {
 						for (Story s : moreStories) {
 							add(s);
 						}
-						add(new Story("END"));
+						Story loadmore = new Story("END");
+						add(loadmore);
 					} else {
-						Log.e(LOG_TAG, "论坛数据格式解析错误");
+						Log.e(LOG_TAG, "msg fomat error");
 					}
 
 				}
@@ -97,12 +99,14 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 		if (rootActivity != null) {
 			rootActivity.startIndeterminateProgressIndicator();
 		}
-		if (status == 0) {
+		switch (status) {
+		case 0:
+			Log.d(LOG_TAG, "clear cache and reload stories");
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					Log.d(LOG_TAG, "clear cache and reload stories");
 					LvyeActivity.clearStoryCache();
+					page_index = 0;
 					if (getMoreStories(url)) {
 						handler.sendEmptyMessage(0);
 					} else {
@@ -110,13 +114,23 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 					}
 				}
 			}).start();
-		} else if (status == 1) {
+			break;
+		case 1:
 			Log.d(LOG_TAG, "use cached stories");
 			moreStories = LvyeActivity.storyCache;
 			handler.sendEmptyMessage(0);
-		} else {
-			// TODO add more stories
-			handler.sendEmptyMessage(0);
+			break;
+		
+		case 2:		
+			page_index++;
+			Log.d(LOG_TAG, "load more story with index " + page_index);
+			if (getMoreStories(url + "&start=" + page_index * 50)) {
+				handler.sendEmptyMessage(0);
+			} else {
+				handler.sendEmptyMessage(-1);
+			}
+			this.remove(this.getItem(50*(page_index)));
+			break;
 		}
 	}
 
@@ -156,17 +170,25 @@ public class NewsListAdapter extends ArrayAdapter<Story> {
 				.findViewById(R.id.NewsItemTeaserText);
 		TextView name = (TextView) convertView
 				.findViewById(R.id.NewsItemNameText);
-		ImageView storyType = (ImageView) convertView.findViewById(R.id.NewsItemImage);
+		ImageView storyType = (ImageView) convertView
+				.findViewById(R.id.NewsItemImage);
 		if (story.isSticky()) {
-			storyType.setImageDrawable(convertView.getResources().getDrawable(R.drawable.stickytop));;
+			storyType.setImageDrawable(convertView.getResources().getDrawable(
+					R.drawable.stickytop));
+			;
 		} else {
-			storyType.setImageDrawable(convertView.getResources().getDrawable(R.drawable.topic));;
+			storyType.setImageDrawable(convertView.getResources().getDrawable(
+					R.drawable.topic));
+			;
 		}
 		if (story.getTitle().equals("END")) {
 			// title='END' marker means it's the end of the list.
-			teaser.setVisibility(View.INVISIBLE);
 			name.setTypeface(name.getTypeface(), Typeface.ITALIC);
 			name.setText(R.string.msg_load_more);
+			teaser.setText(Html.fromHtml(rootActivity
+					.getString(R.string.msg_load_more_hint)));
+			teaser.setVisibility(View.VISIBLE);
+			storyType.setVisibility(View.INVISIBLE);
 		} else {
 
 			name.setText(Html.fromHtml(story.toString()));

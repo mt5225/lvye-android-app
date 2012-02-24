@@ -62,7 +62,7 @@ public class NavigationActivity extends Activity implements OnItemClickListener 
 		Log.d(LOG_TAG, "select forum " + forum.getName());
 		String forumID = ForumList.getForumIDByName(forum.getName());
 		if (forumID != "999") {
-			if (forumID.equals(LvyeActivity.currentForumID)) { //donot need update, self-destroy
+			if (forumID.equals(LvyeActivity.currentForumID)) { //user select the same forum as displayed, no need update, self-destroy
 				this.finish();
 			} else {
 				Intent intent = new Intent(parent.getContext(),  //update the stories list by rebuilt

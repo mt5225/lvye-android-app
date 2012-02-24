@@ -68,17 +68,17 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		}
 		super.onCreate(savedInstanceState);
 		// get url setting info from intent
-		
+
 		if (currentForumID.isEmpty()) {
 			currentForumID = Constants.DEFAULT_FORUM_ID;
 		} else {
-		    currentForumID = getIntent().getStringExtra(Constants.FORUM_ID);
+			currentForumID = getIntent().getStringExtra(Constants.FORUM_ID);
 		}
 		Log.d(LOG_TAG, "currentForumID =" + currentForumID);
 		url = ForumList.getURLbyID(currentForumID);
 
-		//Built the indicator bar under logo bar 
-		//TODO: move this to a layout?
+		// Built the indicator bar under logo bar
+		// TODO: move this to a layout?
 		Log.d(LOG_TAG, "Building Title UI");
 		ViewGroup container = (ViewGroup) findViewById(R.id.TitleContent);
 		ViewGroup.inflate(this, R.layout.title, container);
@@ -91,7 +91,7 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		titleText
 				.setTextColor(getResources().getColor(R.color.news_title_text));
 
-		//Built story list
+		// Built story list
 		Log.d(LOG_TAG, "Build R.layout.news UI");
 		container = (ViewGroup) findViewById(R.id.Content);
 		ViewGroup.inflate(this, R.layout.news, container);
@@ -103,18 +103,15 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 
 		// load stories
 		listAdapter.addMoreStories(url, 0);
-		
 
 		// refresh while click on the logo
 		mLogo = (ImageView) findViewById(R.id.Logo1);
 		mLogo.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				storyCache.clear();
-				listAdapter = new NewsListAdapter(activity);
+				listAdapter.clear();
 				listAdapter.notifyDataSetChanged();
-				listView.setAdapter(listAdapter);
 				listAdapter.addMoreStories(url, 0);
-
 			}
 		});
 	}
@@ -128,19 +125,26 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 		setIntent(i);
 	}
 
-	// Show full story
+	// Show full story / load more story
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 
 		Story story = (Story) parent.getAdapter().getItem(position);
-		Log.d(LOG_TAG, "story item clicked at " + story.getPost_id() + "|"
+		Log.d(LOG_TAG, "story item clicked at " + story.getPost_id() + " | "
 				+ story.getTitle());
-		Intent intent = new Intent(this, FullStoryActivity.class);
-		intent.putExtra(Constants.STORY_ID, story.getPost_id());
-		intent.putExtra(Constants.STORY_TITLE, story.getTitle());
-		intent.putExtra(Constants.FORUM_ID, currentForumID);
-		startActivity(intent);
+		if (story.getTitle().equals("END")) {
+			Log.d(LOG_TAG, "load more stories ... ...");
+			listAdapter.addMoreStories(url, 2);
+			listAdapter.notifyDataSetChanged();
+			
+		} else {
+			Intent intent = new Intent(this, FullStoryActivity.class);
+			intent.putExtra(Constants.STORY_ID, story.getPost_id());
+			intent.putExtra(Constants.STORY_TITLE, story.getTitle());
+			intent.putExtra(Constants.FORUM_ID, currentForumID);
+			startActivity(intent);
+		}
 
 	}
 
@@ -181,7 +185,7 @@ public class LvyeActivity extends RootActivity implements OnItemClickListener {
 									intent.addCategory(Intent.CATEGORY_HOME);
 									intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 									startActivity(intent);
-									//activity.finish();
+									// activity.finish();
 								}
 							})
 					.setNegativeButton("No",

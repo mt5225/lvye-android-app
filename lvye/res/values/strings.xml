@@ -4,6 +4,8 @@
     <string name="hello">Hello World, Lvye!</string>
     <string name="app_name">绿野.org</string>
     <string name="msg_check_connection">网络链接超时</string>
-    <string name="msg_load_more">更多 ... </string>
+    <string name="msg_load_more">更多神贴</string>
+    <string name="msg_load_more_hint"> 点击加载更多神贴 </string>
     <string name="msg_share_story">来自绿野ORG分享:</string>
+    <string name="msg_format_error">格式错误</string>
 </resources>
