@@ -58,10 +58,11 @@ public class FullStoryActivity extends Activity {
 		// load the story page
 		webview = (WebView) findViewById(R.id.webView1);
 		webview.getSettings().setJavaScriptEnabled(false);
+		webview.getSettings().setUseWideViewPort(true);
 		if (has_image) {
-			webview.getSettings().setLoadWithOverviewMode(true);
-			webview.getSettings().setUseWideViewPort(true);
+			webview.getSettings().setLoadWithOverviewMode(true);	
 		}
+		webview.getSettings().setUseWideViewPort(true);
 		webview.setWebChromeClient(new WebChromeClient() {
 			public void onProgressChanged(WebView view, int progress) {
 				Log.d(LOG_TAG, "progress = " + progress);
